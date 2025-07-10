@@ -3,7 +3,8 @@ name: Notificar por Correo en Push a la Rama main
 on:
   push:
     branches:
-      - main  # Solo se activará si el push es a la rama 'qas'
+      - main
+
 jobs:
   notify:
     runs-on: ubuntu-latest
@@ -11,11 +12,18 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v2
 
-      - name: Configuración de sendmail (o similar)
-        run: sudo apt-get install -y mailutils
-
-      - name: Enviar Notificación por Correo
+      - name: Enviar Notificación por Correo usando SendGrid
         run: |
-          echo "Se ha realizado un push en la rama qas del repositorio $GITHUB_REPOSITORY" | mail -s "Notificación de Push en la Rama qas" luis.flores@idslatam.com
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          curl -X POST https://api.sendgrid.com/v3/mail/send \
+          -H "Authorization: Bearer ${{ secrets.SENDGRID_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+                "personalizations": [
+                  {
+                    "to": [{"email": "luis.flores@idslatam.com"}],
+                    "subject": "Notificación de Push en la Rama main"
+                  }
+                ],
+                "from": {"email": "teseo@idslatam.com"},
+                "content": [{"type": "text/plain", "value": "Se ha realizado un push en la rama main del repositorio $GITHUB_REPOSITORY"}]
+              }'
