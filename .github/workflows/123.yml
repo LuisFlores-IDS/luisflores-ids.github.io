@@ -1,4 +1,4 @@
-name: Notificar por Correo en Push a la Rama qas
+name: Notificar por Correo en Push a la Rama main
 
 on:
   push:
