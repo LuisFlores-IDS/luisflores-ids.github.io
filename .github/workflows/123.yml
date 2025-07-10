@@ -1,0 +1,21 @@
+name: Notificar por Correo en Push a la Rama qas
+
+on:
+  push:
+    branches:
+      - main  # Solo se activará si el push es a la rama 'qas'
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v2
+
+      - name: Configuración de sendmail (o similar)
+        run: sudo apt-get install -y mailutils
+
+      - name: Enviar Notificación por Correo
+        run: |
+          echo "Se ha realizado un push en la rama qas del repositorio $GITHUB_REPOSITORY" | mail -s "Notificación de Push en la Rama qas" luis.flores@idslatam.com
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
